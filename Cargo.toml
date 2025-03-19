@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-# rustix = { version = "1.0.2", default-features = false }
 syscalls = { version = "0.6", default-features = false }
 
 [profile.dev]
