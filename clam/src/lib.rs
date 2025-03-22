@@ -1,7 +1,7 @@
 #![no_std]
 use core::result::Result;
 
-use syscalls::{syscall, Errno, Sysno};
+use syscalls::{Errno, Sysno, syscall};
 
 pub mod logger;
 
@@ -35,6 +35,6 @@ pub fn getcwd(buf: &mut [u8]) -> Result<usize, Errno> {
 pub fn read(buf: &mut [u8]) -> Result<usize, Errno> {
     unsafe { syscall!(Sysno::read, STDIN, buf.as_mut_ptr(), buf.len()) }
 }
-pub fn exit() -> Result<usize, Errno>{
+pub fn exit() -> Result<usize, Errno> {
     unsafe { syscall!(Sysno::exit, 0) }
 }

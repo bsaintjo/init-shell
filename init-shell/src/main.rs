@@ -15,11 +15,11 @@ const BUFFER_SIZE: usize = 1024;
 fn parse_input(input: &[u8]) {
     eprintln!("input: ", input);
     match input {
-        b"exit\n" => { 
+        b"exit\n" => {
             log::debug!("EXIT");
             exit();
         }
-        b"quit\n" => { 
+        b"quit\n" => {
             log::debug!("EXIT");
             exit();
         }
