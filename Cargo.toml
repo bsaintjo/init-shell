@@ -1,14 +1,28 @@
-[package]
-name = "init-shell"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+resolver = "2"
+members = ["clam", "init-shell"]
+# [package]
+# name = "init-shell"
+# version = "0.1.0"
+# edition = "2021"
 
-[dependencies]
-log = { version = "0.4.26", default-features = false }
-syscalls = { version = "0.6", default-features = false }
+# [lib]
+# test = false
+# doctest = false
 
-[profile.dev]
-panic = "abort"
+# [[bin]]
+# name ="init-shell"
+# path = "src/bin/init-shell.rs"
+# test = false
+# doctest = false
 
-[profile.release]
-panic = "abort"
+# [dependencies]
+# heapless = "0.8.0"
+# log = { version = "0.4.26", default-features = false }
+# syscalls = { version = "0.6", default-features = false }
+
+# [profile.dev]
+# panic = "abort"
+
+# [profile.release]
+# panic = "abort"

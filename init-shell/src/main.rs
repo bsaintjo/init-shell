@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use init_shell::{getcwd, logger::Logger, print, read};
+use clam::{eprint, eprintln, exit, getcwd, logger::Logger, print, read};
 use log::LevelFilter;
 
 #[panic_handler]
@@ -10,8 +10,22 @@ fn panic(_info: &core::panic::PanicInfo) -> ! {
 }
 
 static LOGGER: Logger = Logger;
-
 const BUFFER_SIZE: usize = 1024;
+
+fn parse_input(input: &[u8]) {
+    eprintln!("input: ", input);
+    match input {
+        b"exit\n" => { 
+            log::debug!("EXIT");
+            exit();
+        }
+        b"quit\n" => { 
+            log::debug!("EXIT");
+            exit();
+        }
+        _ => {}
+    }
+}
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
@@ -24,7 +38,7 @@ pub extern "C" fn _start() -> ! {
         let _ = print(&buffer);
         let _ = print(b" $ ");
         if let Ok(input) = read(&mut buffer) {
-            let _ = print(&buffer[..input]);
+            parse_input(&buffer[..input]);
         }
     }
 }

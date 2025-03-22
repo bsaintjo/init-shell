@@ -13,7 +13,18 @@ pub fn print(message: &[u8]) -> Result<usize, Errno> {
     unsafe { syscall!(Sysno::write, STDOUT, message.as_ptr(), message.len()) }
 }
 
-pub fn eprint(message: &[u8]) -> Result<usize, Errno> {
+#[macro_export]
+macro_rules! eprintln {
+    ($fst:expr $(, $args: expr)*) => {
+        let res = eprint($fst);
+        $(
+            let _ = res.and_then(|_| eprint($args));
+        )*
+    };
+}
+
+pub fn eprint<B: AsRef<[u8]> + ?Sized>(message: &B) -> Result<usize, Errno> {
+    let message = message.as_ref();
     unsafe { syscall!(Sysno::write, STDERR, message.as_ptr(), message.len()) }
 }
 
@@ -23,4 +34,7 @@ pub fn getcwd(buf: &mut [u8]) -> Result<usize, Errno> {
 
 pub fn read(buf: &mut [u8]) -> Result<usize, Errno> {
     unsafe { syscall!(Sysno::read, STDIN, buf.as_mut_ptr(), buf.len()) }
+}
+pub fn exit() -> Result<usize, Errno>{
+    unsafe { syscall!(Sysno::exit, 0) }
 }

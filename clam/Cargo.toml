@@ -1,0 +1,9 @@
+[package]
+name = "clam"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+syscalls = { version = "0.6", default-features = false }
+heapless = "0.8.0"
+log = { version = "0.4.26", default-features = false }
