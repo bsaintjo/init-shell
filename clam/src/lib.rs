@@ -9,7 +9,8 @@ const STDIN: usize = 0;
 const STDOUT: usize = 1;
 const STDERR: usize = 2;
 
-pub fn print(message: &[u8]) -> Result<usize, Errno> {
+pub fn print<B: AsRef<[u8]> + ?Sized>(message: &B) -> Result<usize, Errno> {
+    let message = message.as_ref();
     unsafe { syscall!(Sysno::write, STDOUT, message.as_ptr(), message.len()) }
 }
 

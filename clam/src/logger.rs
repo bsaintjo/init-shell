@@ -12,7 +12,7 @@ pub struct Logger;
 impl log::Log for Logger {
     fn log(&self, record: &log::Record) {
         unsafe {
-            write!(LOG_BUFFER, "{}", record.level()).unwrap();
+            writeln!(LOG_BUFFER, "{} - {}", record.level(), record.args()).unwrap();
             let _ = eprint(&LOG_BUFFER);
         }
     }
