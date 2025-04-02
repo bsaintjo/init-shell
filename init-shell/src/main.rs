@@ -3,7 +3,7 @@
 
 use core::str;
 
-use clam::{eprint, eprintln, exit, getcwd, logger::Logger, print, read};
+use clam::{eprint, eprintln, exit, getcwd, logger::Logger, print, read, ShellError};
 use log::LevelFilter;
 
 #[panic_handler]
@@ -19,7 +19,7 @@ enum Command {
     Unknown,
 }
 
-fn parse_input(input: &str) -> Command {
+fn parse_input(input: &str) -> anyhow::Result<Command> {
     eprintln!("input: ", input);
     let args = input
         .split_ascii_whitespace()
@@ -27,23 +27,43 @@ fn parse_input(input: &str) -> Command {
     match args[0] {
         "exit" if args.len() == 1 => {
             log::debug!("EXIT");
-            Command::Exit
+            Ok(Command::Exit)
         }
         "quit" => {
             log::debug!("EXIT");
-            Command::Exit
+            Ok(Command::Exit)
         }
         _ => {
-            print("Unknown command\n");
-            Command::Unknown
+            print("Unknown command\n")?;
+            Ok(Command::Unknown)
         }
     }
 }
 
-fn print_prompt(buffer: &mut [u8]) {
-    let _ = getcwd(buffer.as_mut());
-    let _ = print(&buffer);
-    let _ = print(b" $ ");
+fn print_prompt(buffer: &mut [u8]) -> Result<(), ShellError> {
+    getcwd(buffer.as_mut())?;
+    print(&buffer)?;
+    print(b" $ ")?;
+    Ok(())
+}
+
+fn run() -> anyhow::Result<()> {
+    let mut buffer = [0u8; BUFFER_SIZE];
+
+    loop {
+        print_prompt(&mut buffer)?;
+        if let Ok(input) = read(&mut buffer) {
+            let cmd = parse_input(str::from_utf8(&buffer[..input])?)?;
+            match cmd {
+                Command::Exit => {
+                    exit();
+                }
+                Command::Unknown => {
+                    continue;
+                }
+            }
+        }
+    }
 }
 
 #[no_mangle]
@@ -51,18 +71,9 @@ pub extern "C" fn _start() -> ! {
     log::set_logger(&LOGGER).unwrap();
     log::set_max_level(LevelFilter::Trace);
 
-    let mut buffer = [0u8; BUFFER_SIZE];
+    if let Err(_) = run() {
+        eprint("Unknown command\n");
+    };
 
-    loop {
-        print_prompt(&mut buffer);
-        if let Ok(input) = read(&mut buffer) {
-            let cmd = parse_input(str::from_utf8(&buffer[..input]).unwrap());
-            match cmd {
-                Command::Exit => {
-                    let _ = exit();
-                }
-                Command::Unknown => {}
-            }
-        }
-    }
+    loop {}
 }
