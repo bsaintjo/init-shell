@@ -19,7 +19,7 @@ enum Command {
     Unknown,
 }
 
-fn parse_input(input: &str) -> anyhow::Result<Command> {
+fn parse_input(input: &str) -> Command {
     eprintln!("input: ", input);
     let args = input
         .split_ascii_whitespace()
@@ -27,15 +27,15 @@ fn parse_input(input: &str) -> anyhow::Result<Command> {
     match args[0] {
         "exit" if args.len() == 1 => {
             log::debug!("EXIT");
-            Ok(Command::Exit)
+            Command::Exit
         }
         "quit" => {
             log::debug!("EXIT");
-            Ok(Command::Exit)
+            Command::Exit
         }
         _ => {
-            print("Unknown command\n")?;
-            Ok(Command::Unknown)
+            print("Unknown command\n").unwrap();
+            Command::Unknown
         }
     }
 }
@@ -47,13 +47,13 @@ fn print_prompt(buffer: &mut [u8]) -> Result<(), ShellError> {
     Ok(())
 }
 
-fn run() -> anyhow::Result<()> {
+fn run() -> Result<(), ShellError> {
     let mut buffer = [0u8; BUFFER_SIZE];
 
     loop {
         print_prompt(&mut buffer)?;
         if let Ok(input) = read(&mut buffer) {
-            let cmd = parse_input(str::from_utf8(&buffer[..input])?)?;
+            let cmd = parse_input(str::from_utf8(&buffer[..input]).unwrap());
             match cmd {
                 Command::Exit => {
                     exit();
